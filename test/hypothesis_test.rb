@@ -18,6 +18,15 @@ class HypothesisTest < ActiveSupport::TestCase
     end
   end
 
+  def connected_deals(tenant:)
+    built_as do
+      existing_deal_count = any integers(min: 0, max: 3)
+      existing_deal_count.times.map do
+        Deal.create(tenant: tenant, stage: :lease_executed)
+      end
+    end
+  end
+
   def new_deals(tenant:)
     built_as do
       Deal.create(tenant: tenant, stage: stages)
@@ -34,16 +43,16 @@ class HypothesisTest < ActiveSupport::TestCase
       end
 
       tenant = Tenant.first
-      deals_matching_criteria = any deals(tenant: tenant), name: 'Connected Deals'
+      deal_connection_deals = any connected_deals(tenant: tenant), name: 'Connected Deals'
       other_deals = any deals(tenant: any(element_of(Tenant.all - [tenant]))), name: 'Existing Deals'
       
       new_deal = any new_deals(tenant: tenant), name: 'New Deal'
 
-      if Connections.connection_exists?(new_deal)
-        any_late_stage_deal = deals_matching_criteria.any? { |d| d.stage.to_sym == :lease_executed }
+      if Connections.connection_exists_bug?(new_deal)
+        any_late_stage_deal = deal_connection_deals.any? { |d| d.stage.to_sym == :lease_executed }
         assert_equal true, any_late_stage_deal
       else
-        assert_equal true, deals_matching_criteria.all? { |d| d.stage.to_sym == :inquiry }
+        assert_equal true, deal_connection_deals.all? { |d| d.stage.to_sym == :inquiry }
       end
     end    
   end
