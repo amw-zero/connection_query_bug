@@ -4,7 +4,7 @@ module Connections
   end
 
   def self.connection_exists_bug?(deal)
-    Deal.where(tenant: deal.tenant, stage: :lease_executed).count > 0
+    Deal.where(tenant: deal.tenant, stage: :lease_executed).count > 1
   end
 
   def self.connection_exists_r?(deal, repo)

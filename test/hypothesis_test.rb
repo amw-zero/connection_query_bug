@@ -32,23 +32,29 @@ class HypothesisTest < ActiveSupport::TestCase
       Deal.create(tenant: tenant, stage: stages)
     end
   end
-  
-  def test_hypo2
-    hypothesis do
-      DatabaseCleaner.clean
 
+  def tenants
+    built_as do
       tenant_count = any integers(min: 2, max: 4), name: 'Tenant Count'
-      tenant_count.times do |i|
+      tenant_count.times.map do |i|
         Tenant.create(name: "Tenant #{i}")
       end
+    end
+  end
+  
+  def test_deal_connection_query
+    hypothesis do |test_case|
+      DatabaseCleaner.clean
 
-      tenant = Tenant.first
-      deal_connection_deals = any connected_deals(tenant: tenant), name: 'Connected Deals'
-      other_deals = any deals(tenant: any(element_of(Tenant.all - [tenant]))), name: 'Existing Deals'
+      some_tenants = any tenants, name: 'Tenants'
+
+      connected_tenant = some_tenants.first
+      deal_connection_deals = any connected_deals(tenant: connected_tenant), name: 'Connected Deals'
+      other_deals = any deals(tenant: any(element_of(Tenant.all - [connected_tenant]))), name: 'Existing Deals'
       
-      new_deal = any new_deals(tenant: tenant), name: 'New Deal'
+      new_deal = any new_deals(tenant: connected_tenant), name: 'New Deal'
 
-      if Connections.connection_exists_bug?(new_deal)
+      if Connections.connection_exists?(new_deal)
         any_late_stage_deal = deal_connection_deals.any? { |d| d.stage.to_sym == :lease_executed }
         assert_equal true, any_late_stage_deal
       else
