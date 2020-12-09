@@ -34,16 +34,16 @@ class HypothesisTest < ActiveSupport::TestCase
       end
 
       tenant = Tenant.first
-      deals_for_tenant = any deals(tenant: tenant), name: 'Connected Deals'
+      deals_matching_criteria = any deals(tenant: tenant), name: 'Connected Deals'
       other_deals = any deals(tenant: any(element_of(Tenant.all - [tenant]))), name: 'Existing Deals'
       
       new_deal = any new_deals(tenant: tenant), name: 'New Deal'
 
       if Connections.connection_exists?(new_deal)
-        any_late_stage_deal = deals_for_tenant.any? { |d| d.stage.to_sym == :lease_executed }
+        any_late_stage_deal = deals_matching_criteria.any? { |d| d.stage.to_sym == :lease_executed }
         assert_equal true, any_late_stage_deal
       else
-        assert_equal true, deals_for_tenant.all? { |d| d.stage.to_sym == :inquiry }
+        assert_equal true, deals_matching_criteria.all? { |d| d.stage.to_sym == :inquiry }
       end
     end    
   end
