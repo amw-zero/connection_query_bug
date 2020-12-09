@@ -1,5 +1,5 @@
 class Deal < ApplicationRecord
-  enum stage: [:inquiry, :loi]
+  enum stage: [:inquiry, :lease_executed]
   
   belongs_to :tenant
 
