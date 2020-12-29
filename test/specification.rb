@@ -50,16 +50,20 @@ module Specify
       @definition_index = definitions.group_by(&:name)
     end
 
+    # All of the property-based testing code should move together into its own abstraction
+    # This is now confusing - this function has to run inside of a hypothesis block
     def create_spec_value(type)
       puts "Create value for #{type}"
+      raise "Attempting to create spec value, unknown type: #{type}" unless type.is_a?(Symbol)
 
-      5
+      case type
+      when :number
+        any integers
+      end
     end
 
-    def create_implementation_value(type)
-      puts "Create value for #{type}"
-
-      5
+    def create_implementation_values(spec_inputs)
+      spec_inputs
     end
 
     def verify(names, implementations:)
@@ -76,7 +80,7 @@ module Specify
           spec_inputs = definition.signature.map { |type| create_spec_value(type) }
           expected = definition.apply(*spec_inputs)
 
-          actual_inputs = definition.signature.map { |type| create_implementation_value(type) }
+          actual_inputs = create_implementation_values(spec_inputs)
           actual = implementations[definition.name].call(*actual_inputs)
 
           yield(TestCase.new(expected: expected, actual: actual))
@@ -111,6 +115,7 @@ class SpecificationTest < ActiveSupport::TestCase
     add = Specify::Relation.new(name: :add, signature: [:number, :number]) do |n1, n2|
       n1 + n2
     end
+
     spec = Specify::Specification.new([
       Specify::Set.new(name: :number, value: [1, 2, 3]),
 
