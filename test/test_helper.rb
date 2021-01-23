@@ -6,9 +6,9 @@ class TestCase < ActiveSupport::TestCase
   # Setup all fixtures in test/fixtures/*.yml for all tests in alphabetical order.
   fixtures :all
 
-  # setup do
-  #   DatabaseCleaner.start
-  # end
+  setup do
+    DatabaseCleaner.start
+  end
 
   teardown do
     DatabaseCleaner.clean

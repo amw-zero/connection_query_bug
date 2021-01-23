@@ -58,7 +58,9 @@ group :test do
   gem 'chromedriver-helper'
   gem 'database_cleaner-active_record'
   gem 'prop_check'
-  gem 'hypothesis-specs', path: '~/code/forks/hypothesis/hypothesis-ruby'
+  gem 'hypothesis-specs'
+  gem 'rspec'
+#  gem 'hypothesis-specs', path: '~/code/forks/hypothesis/hypothesis-ruby'
 end
 
 # Windows does not include zoneinfo files, so bundle the tzinfo-data gem

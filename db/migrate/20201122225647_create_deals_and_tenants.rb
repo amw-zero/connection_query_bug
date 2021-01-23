@@ -1,6 +1,4 @@
 class CreateDealsAndTenants < ActiveRecord::Migration[5.2]
-  # Tenant
-# Deal -> Tenant | stage
   def change
     create_table :tenants do |t|
       t.string :name
