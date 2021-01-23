@@ -7,6 +7,16 @@ class HypothesisTest < ActiveSupport::TestCase
   include Hypothesis
   include Hypothesis::Possibilities
 
+  def debug(all_deals, new_deal)
+    puts "All deals"
+    puts all_deals.to_s
+
+    puts; puts "New deal"
+    puts new_deal.inspect
+    puts "================="
+    puts
+  end
+
   def stages
     any element_of([:inquiry, :lease_executed])
   end
@@ -27,17 +37,7 @@ class HypothesisTest < ActiveSupport::TestCase
 
   def tenants
     array(of: gen_tenant, min_size: 2, max_size: 4)
-  end
-
-  def debug(all_deals, new_deal)
-    puts "All deals"
-    puts all_deals.to_s
-
-    puts; puts "New deal"
-    puts new_deal.inspect
-    puts "================="
-    puts
-  end
+  end  
 
   def test_deal_connection_query
     x = 0
